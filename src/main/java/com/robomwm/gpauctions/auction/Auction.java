@@ -2,6 +2,7 @@ package com.robomwm.gpauctions.auction;
 
 import com.robomwm.gpauctions.Config;
 import com.robomwm.gpauctions.GPAuctions;
+import com.robomwm.usefulutils.UsefulUtils;
 import me.ryanhamshire.GriefPrevention.Claim;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,13 +11,16 @@ import org.bukkit.block.Sign;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created on 1/20/2019.
@@ -29,11 +33,13 @@ public class Auction implements ConfigurationSerializable
     private long endTime;
     private double startingBid;
     private UUID owner;
-    private Stack<Bid> bids = new Stack<>();
+    private Deque<Bid> bids = new ArrayDeque<>();
     private Sign sign;
 
     public Auction(Claim claim, long endTime, double startingBid, Sign sign)
     {
+        if (startingBid < 0)
+            throw new IllegalArgumentException("startingBid cannot be a negative value");
         this.claimID = claim.getID();
         this.owner = claim.ownerID;
         this.endTime = endTime;
@@ -58,12 +64,23 @@ public class Auction implements ConfigurationSerializable
         }
     }
 
+    public Sign getSign()
+    {
+        return sign;
+    }
+
     public void updateSign()
     {
         sign.setLine(0, "Real Estate");
         sign.setLine(1, ChatColor.DARK_GREEN + "Auction");
         sign.setLine(2, getOwnerName());
         sign.setLine(3, Auctioneer.format(getNextBidPrice()));
+        sign.update(false, false);
+    }
+
+    public void endSign(String status)
+    {
+        sign.setLine(1, ChatColor.DARK_GREEN + "Auction " + status);
         sign.update(false, false);
     }
 
@@ -103,7 +120,7 @@ public class Auction implements ConfigurationSerializable
             GPAuctions.debug("bid is less than starting bid.");
             return false;
         }
-        else if (bid.getPrice() < bids.peek().getPrice())
+        else if (!bids.isEmpty() && bid.getPrice() < bids.peek().getPrice())
         {
             GPAuctions.debug("bid is less than current bid.");
             return false;
@@ -125,9 +142,16 @@ public class Auction implements ConfigurationSerializable
         throw new NotImplementedException();
     }
 
-    public Stack<Bid> getBids()
+    public Collection<Bid> getBids()
     {
         return bids;
+    }
+
+    public Bid getHighestBid()
+    {
+        if (bids.isEmpty())
+            return null;
+        return bids.getFirst();
     }
 
     @Override
@@ -144,7 +168,7 @@ public class Auction implements ConfigurationSerializable
         List<String> bidsList = new ArrayList<>();
         for (Bid bid : bids)
             bidsList.add(bid.getBidderUUID() + "," + bid.getPrice());
-        Collections.reverse(bids);
+        Collections.reverse(bidsList);
         map.put("bids", bidsList);
         return map;
     }
@@ -160,5 +184,10 @@ public class Auction implements ConfigurationSerializable
         return "Claim ID: " + claimID +
                 " endTime: " + endTime +
                 " startingBid: " + startingBid;
+    }
+
+    public String getEndTimeString()
+    {
+        return UsefulUtils.formatTime(TimeUnit.MILLISECONDS.toSeconds(this.getEndTime() - System.currentTimeMillis()));
     }
 }

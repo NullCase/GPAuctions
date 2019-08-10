@@ -2,6 +2,7 @@ package com.robomwm.gpauctions.command;
 
 import com.robomwm.gpauctions.auction.Auction;
 import com.robomwm.gpauctions.auction.Auctioneer;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,6 +19,11 @@ public class CancelCommand implements CommandExecutor
 {
     private Auctioneer auctioneer;
 
+    public CancelCommand(Auctioneer auctioneer)
+    {
+        this.auctioneer = auctioneer;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
     {
@@ -29,22 +35,26 @@ public class CancelCommand implements CommandExecutor
             return false;
         }
 
-        if (hasPermission(auction.getOwner(), player))
+        if (!hasPermission(auction.getOwner(), player))
         {
-            player.sendMessage("This ain't your auction to cancel.");
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                    "[&6GPAuctions&f] &bThis is not your auction. Bidding may continue."));
             return true;
         }
 
         if (auctioneer.cancelAuction(auction))
-            player.sendMessage("Successfully canceled auction.");
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                    "[&6GPAuctions&f] &bAuction canceled. Claim returned."));
 
         return true;
     }
 
     public boolean hasPermission(UUID owner, Player player)
     {
-        if (owner == player.getUniqueId())
+        if (owner == null)
+            return false;
+        if (owner.equals(player.getUniqueId()))
             return true;
-        return owner == null && player.hasPermission("griefprevention.adminclaims");
+        return player.hasPermission("griefprevention.adminclaims");
     }
 }

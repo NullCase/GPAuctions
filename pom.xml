@@ -6,7 +6,7 @@
 
     <groupId>com.robomwm</groupId>
     <artifactId>GPAuctions</artifactId>
-    <version>1.0.beta2</version>
+    <version>1.2.2</version>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -20,9 +20,13 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <!--<repository>-->
+            <!--<id>vault-repo</id>-->
+            <!--<url>http://nexus.hc.to/content/repositories/pub_releases</url>-->
+        <!--</repository>-->
         <repository>
-            <id>vault-repo</id>
-            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
+            <id>essx-repo</id>
+            <url>https://ci.ender.zone/plugin/repository/everything/</url>
         </repository>
     </repositories>
     <build>
@@ -45,12 +49,12 @@
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <artifactSet>
                         <includes>
-                            <include>com.github.RoboMWM:UsefulUtil</include>
+                            <include>com.github.RoboMWM:UsefulUtils</include>
                         </includes>
                     </artifactSet>
                     <relocations>
                         <relocation>
-                            <pattern>com.robomwm.usefulutil</pattern>
+                            <pattern>com.robomwm.usefulutils</pattern>
                             <shadedPattern>com.robomwm.GPAuctions</shadedPattern>
                         </relocation>
                     </relocations>
@@ -86,20 +90,20 @@
         <dependency>
             <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.13.2-R0.1-SNAPSHOT</version>
+            <version>1.14.4-R0.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.TechFortress</groupId>
             <artifactId>GriefPrevention</artifactId>
-            <version>16.11.5</version>
+            <version>832ec7e</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.RoboMWM</groupId>
-            <artifactId>UsefulUtil</artifactId>
-            <version>3.2</version>
+            <artifactId>UsefulUtils</artifactId>
+            <version>4.0.2</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -108,6 +112,13 @@
             <version>1.7</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.RoboMWM</groupId>
+            <artifactId>GPRealEstate</artifactId>
+            <version>1.5.8</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
 </project>
